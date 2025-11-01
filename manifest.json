@@ -1,0 +1,87 @@
+{
+    "manifest_version": 3,
+    "name": "Tabitha — Talk to her. Tidy your tabs.",
+    "version": "0.1.1",
+    "description": "A voice-enabled tab assistant that keeps your tabs — and your sanity 😅 — in check. Now meeting-aware: mutes noisy tabs and keeps your focus where it belongs.",
+  
+    "icons": {
+      "16":  "icons/icon16.png",
+      "24":  "icons/icon24.png",
+      "32":  "icons/icon32.png",
+      "48":  "icons/icon48.png",
+      "64":  "icons/icon64.png",
+      "128": "icons/icon128.png",
+      "256": "icons/icon256.png",
+      "512": "icons/icon512.png"
+    },
+  
+    "action": {
+      "default_title": "Tabitha",
+      "default_popup": "popup/popup.html",
+      "default_icon": {
+        "16": "icons/icon16.png",
+        "24": "icons/icon24.png",
+        "32": "icons/icon32.png"
+      }
+    },
+  
+    "background": {
+      "service_worker": "background.js",
+      "type": "module"
+    },
+  
+    "permissions": [
+      "tabs",
+      "tabGroups",
+      "storage",
+      "scripting",
+      "notifications",
+      "history",
+      "activeTab",
+      "contextMenus",
+      "offscreen",
+      "bookmarks",
+      "alarms",
+      "sessions"
+    ],
+  
+    "host_permissions": [
+      "<all_urls>"
+    ],
+  
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"],
+        "run_at": "document_idle"
+      }
+    ],
+  
+    "options_page": "options/options.html",
+  
+    "commands": {
+      "toggle-voice": {
+        "suggested_key": {
+          "default": "Alt+Space"
+        },
+        "description": "Toggle voice listening"
+      }
+    },
+  
+    "author": "Tanya Khanna",
+    "short_name": "Tabitha",
+    "homepage_url": "https://example.com/tabitha",
+  
+    "web_accessible_resources": [
+      {
+        "resources": ["offscreen.html", "offscreen.js", "icons/*", "popup/popup.css", "popup/popup.js", "popup/popup.html"],
+        "matches": ["<all_urls>"]
+      }
+    ],
+    "trial_tokens": [
+      "A/Bd9HsKjAQmET6mBvurLKns+j5+oQgXqhaiL50w8bqAmhoc3m02qsy5owFJx3gryxR6Njc+JwXCOKOOcAi7mQ4AAACPeyJvcmlnaW4iOiJjaHJvbWUtZXh0ZW5zaW9uOi8vbmlkaGFnZGRiZW9ibmxqb2RraW9kamZkcGhtZ21sYW8iLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElNdWx0aW1vZGFsSW5wdXQiLCJleHBpcnkiOjE3NzQzMTA0MDAsImlzVGhpcmRQYXJ0eSI6dHJ1ZX0=",
+      "A9+MvsJD0SqGXAYKuyVMna+2UatCMuClI9ifUy/1+lUEYNf6yLEY/CqgHL+jjRBDjODK0ogdZD1ZfMxwgEizuwIAAACCeyJvcmlnaW4iOiJjaHJvbWUtZXh0ZW5zaW9uOi8vbmlkaGFnZGRiZW9ibmxqb2RraW9kamZkcGhtZ21sYW8iLCJmZWF0dXJlIjoiQUlSZXdyaXRlckFQSSIsImV4cGlyeSI6MTc3NjcyOTYwMCwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ==",
+      "A+TNk7mhnoCs2Nz7xvlKFV/doIokqHgYpAfKDuDAHN6O/DhS9gvsKRsHDofgrtNFf7rkKKoDvWitLpOJHjVnfwQAAACFeyJvcmlnaW4iOiJjaHJvbWUtZXh0ZW5zaW9uOi8vbmlkaGFnZGRiZW9ibmxqb2RraW9kamZkcGhtZ21sYW8iLCJmZWF0dXJlIjoiQUlQcm9vZnJlYWRlckFQSSIsImV4cGlyeSI6MTc3OTE0ODgwMCwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="
+    ]
+  }
+  

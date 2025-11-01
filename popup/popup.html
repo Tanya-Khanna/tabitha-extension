@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Tabitha</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../assets/fonts.css" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <!-- ============================================================================
+       TABITHA EXTENSION - POPUP HTML
+       ============================================================================
+       This file contains the HTML structure for the Tabitha Chrome extension popup.
+       It's organized by feature with clear section headers for easy navigation.
+       ============================================================================ -->
+  <div class="wrap">
+    <!-- ============================================================================
+         🎨 HEADER & BRANDING
+         ============================================================================
+         Tabitha logo, title, and tagline
+         ============================================================================ -->
+    <header class="brand">
+      <div class="icon" aria-hidden="true">
+        <!-- Simple mic + tab-bar glyph (SVG) -->
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <!-- tab bar (3 overlapped tabs) -->
+          <rect x="3" y="6" width="22" height="5" rx="2" fill="url(#g)"/>
+          <rect x="5" y="10" width="20" height="5" rx="2" fill="url(#g)"/>
+          <rect x="7" y="14" width="18" height="5" rx="2" fill="url(#g)"/>
+          <!-- mic -->
+          <rect x="12" y="10" width="4" height="6" rx="2" fill="#F2D5CB"/>
+          <path d="M10.8 14c0 2.1 1.7 3.2 3.2 3.2s3.2-1.1 3.2-3.2" stroke="#F2D5CB" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M14 17.6v2.0" stroke="#F2D5CB" stroke-width="1.6" stroke-linecap="round"/>
+          <rect x="12" y="19.6" width="4" height="1.2" rx="0.6" fill="#F2D5CB"/>
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="28" y2="0" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#7A1E28"/>
+              <stop offset="0.6" stop-color="#B24B5B"/>
+              <stop offset="1" stop-color="#EBCFC3"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div style="flex: 1;">
+      <h1 class="title">tabitha</h1>
+      <p class="tag">Your friendly tab companion</p>
+      </div>
+      <footer class="foot" style="margin: 0; align-self: flex-start;">
+        <a href="../options/options.html" target="_blank" rel="noopener">Settings</a>
+        <span>v0.1.0</span>
+      </footer>
+    </header>
+
+    <!-- ============================================================================
+         🎯 MAIN MENU NAVIGATION
+         ============================================================================
+         Primary navigation buttons for all features
+         ============================================================================ -->
+    <nav class="menu">
+      <button class="item" data-action="talk">🎙️ Talk to your Tabs</button>
+      <button class="item" data-action="chat">💬 Chat with your Tabs</button>
+      <button class="item" data-action="organize">🧩 Organize Tab Bar</button>
+      <button class="item" data-action="mute">🔕 Mute Tabs (Meeting-aware)</button>
+    </nav>
+
+
+    <!-- ============================================================================
+         🎙️ VOICE HUB FEATURE
+         ============================================================================
+         "Talk to your Tabs" functionality with voice interface simulation
+         Includes: microphone button, live captions toggle, voice states, transcript
+         ============================================================================ -->
+    <div class="voice-hub hidden" id="voiceHub" role="dialog" aria-modal="false" aria-labelledby="vh-title">
+      <header class="hub-header">
+        <button id="switchToChatBtn" class="ghost small" aria-label="Switch to Chat">Switch to Chat</button>
+        <div class="header-controls">
+          <div class="live-captions-toggle">
+            <label for="liveCaptionsToggle" class="toggle-label">Live Captions</label>
+            <label class="toggle-wrapper">
+              <input type="checkbox" id="liveCaptionsToggle" class="toggle-input">
+              <div class="toggle-slider"></div>
+            </label>
+          </div>
+        <div class="status">
+          <span class="dot" id="statusDot" aria-hidden="true"></span>
+          <span id="statusText">Idle</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="hub-body">
+        <h2 id="vh-title" class="visually-hidden">Talk to your tabs</h2>
+
+        <button class="mic" id="micBtn" aria-label="Talk">
+          <div class="pulse" aria-hidden="true"></div>
+          <svg class="mic-icon" viewBox="0 0 24 24" width="40" height="40" aria-hidden="true">
+            <rect x="9" y="5" width="6" height="10" rx="3" fill="#F2D5CB"/>
+            <path d="M7.5 12c0 3 2.5 4.5 4.5 4.5s4.5-1.5 4.5-4.5" stroke="#F2D5CB" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 16.5V19" stroke="#F2D5CB" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+
+        <div class="thinking hidden" id="thinkingBar" aria-hidden="true">
+          <span class="shimmer"></span>
+          <span>Just a moment…</span>
+        </div>
+
+        <div class="speaking hidden" id="speakingEQ" aria-hidden="true" title="Speaking">
+          <span class="bar b1"></span>
+          <span class="bar b2"></span>
+          <span class="bar b3"></span>
+        </div>
+      </section>
+
+      <section class="hub-transcript" id="transcriptArea" aria-live="polite" aria-relevant="additions">
+        <div class="bubble you">Close research tabs.</div>
+        <div class="bubble her">Would you like me to save them first?</div>
+      </section>
+      
+      <!-- Voice disambiguation cards (appears when multiple matches found) -->
+      <section class="voice-disambiguation hidden" id="voiceDisambiguation">
+        <div class="voice-cards-container" id="voiceCardsContainer"></div>
+      </section>
+    </div>
+
+    <!-- ============================================================================
+         💬 CHAT INTERFACE FEATURE
+         ============================================================================
+         "Chat with your Tabs" functionality with AI-like conversation
+         Includes: chat messages, typewriter effects, thinking indicators, input area
+         ============================================================================ -->
+    <div class="chat-interface hidden" id="chatInterface" role="dialog" aria-modal="false" aria-labelledby="chat-title">
+      <header class="chat-header">
+        <button id="chatBackBtn" class="ghost small" aria-label="Back to menu">← Back</button>
+        <div class="chat-status">
+          <span class="dot" id="chatStatusDot" aria-hidden="true"></span>
+          <span id="chatStatusText">Idle</span>
+        </div>
+      </header>
+
+      <section class="chat-body">
+        <div class="chat-intro">
+          <h2 id="chat-title">Say it once. Tabitha does the rest.</h2>
+        </div>
+
+        <div class="chat-messages" id="chatMessages" aria-live="polite" aria-relevant="additions">
+          <div class="message user">
+            <div class="message-content">Find my research tabs on AI ethics.</div>
+          </div>
+          <div class="message tabitha">
+            <div class="message-content">Found 4 tabs about AI ethics — would you like to close unrelated ones?</div>
+          </div>
+        </div>
+
+        <div class="thinking-indicator hidden" id="chatThinkingIndicator" aria-hidden="true">
+          <div class="thinking-dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <span class="thinking-text">Tabitha is thinking...</span>
+        </div>
+      </section>
+
+      <section class="chat-input-area">
+        <div class="input-wrapper">
+          <input type="text" id="chatInput" placeholder="Ask Tabitha about your tabs..." autocomplete="off">
+          <button id="chatSendBtn" class="send-btn" aria-label="Send message">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="#F2D5CB"/>
+            </svg>
+          </button>
+          <button id="chatStopBtn" class="stop-btn hidden" aria-label="Stop thinking">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <rect x="6" y="6" width="12" height="12" rx="2" fill="#F2D5CB"/>
+            </svg>
+          </button>
+        </div>
+        <p class="privacy-note">🔒 All processing is on-device</p>
+      </section>
+    </div>
+
+    <!-- ============================================================================
+         🧩 ORGANIZE TAB BAR FEATURE
+         ============================================================================
+         "Organize Tab Bar" functionality with different organizing modes
+         Includes: mode selection cards, organize controls, floating chip, settings
+         ============================================================================ -->
+    <div class="organize-interface hidden" id="organizeInterface" role="dialog" aria-modal="false" aria-labelledby="organize-title">
+      <header class="organize-header">
+        <button id="organizeBackBtn" class="ghost small" aria-label="Back to menu">← Back</button>
+        <div class="organize-status">
+          <span class="dot" id="organizeStatusDot" aria-hidden="true"></span>
+          <span id="organizeStatusText">Ready to organize</span>
+        </div>
+      </header>
+
+      <section class="organize-body">
+        <div class="organize-intro">
+          <h2 id="organize-title">Let Tabitha tidy up your tabs ✨</h2>
+          <p class="organize-subtitle">Choose how you'd like your tabs organized</p>
+        </div>
+
+        <div class="organize-modes" id="organizeModes">
+          <div class="mode-card" data-mode="intent">
+            <div class="mode-icon">🧠</div>
+            <div class="mode-content">
+              <h3>By Intent</h3>
+              <p class="mode-description">Clusters your tabs by purpose — from work to play — so your brain can follow your flow.</p>
+              <div class="mode-examples">
+                <span class="example-tag">Work</span>
+                <span class="example-tag">Research</span>
+                <span class="example-tag">Communication</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mode-card" data-mode="activity">
+            <div class="mode-icon">⚙️</div>
+            <div class="mode-content">
+              <h3>By Activity</h3>
+              <p class="mode-description">Sorts tabs by how alive they are — your most used ones stay up front.</p>
+              <div class="mode-examples">
+                <span class="example-tag">Active Now</span>
+                <span class="example-tag">Recently Used</span>
+                <span class="example-tag">Frequently Used</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mode-card" data-mode="session">
+            <div class="mode-icon">⏳</div>
+            <div class="mode-content">
+              <h3>By Session</h3>
+              <p class="mode-description">Keeps your browsing organized by day or task — resume where you left off.</p>
+              <div class="mode-examples">
+                <span class="example-tag">Today's Flow</span>
+                <span class="example-tag">Yesterday's Research</span>
+                <span class="example-tag">Last Week</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mode-card" data-mode="domain">
+            <div class="mode-icon">🌐</div>
+            <div class="mode-content">
+              <h3>By Website Domain</h3>
+              <p class="mode-description">Groups tabs from the same site — no more Google tab jungle.</p>
+              <div class="mode-examples">
+                <span class="example-tag">Google</span>
+                <span class="example-tag">YouTube</span>
+                <span class="example-tag">Notion</span>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+
+        <div class="organize-controls">
+          <button id="organizeNowBtn" class="organize-btn primary" disabled>
+            <span class="btn-icon">✨</span>
+            <span class="btn-text">Organize Now</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Floating chip that appears during organization -->
+      <div class="floating-chip hidden" id="floatingChip">
+        <div class="chip-content">
+          <span class="chip-icon">✨</span>
+          <span class="chip-text">Tabitha is organizing your tabs…</span>
+        </div>
+        <button class="chip-undo" id="undoOrganizeBtn">↩ Undo</button>
+      </div>
+    </div>
+
+
+    <!-- ============================================================================
+         🔕 MUTE TABS FEATURE
+         ============================================================================
+         "Mute Tabs (Meeting-aware)" functionality with sound control
+         Includes: sound indicators, meeting detection, mute controls, toast messages
+         ============================================================================ -->
+    <div class="mute-interface hidden" id="muteInterface" role="dialog" aria-modal="false" aria-labelledby="mute-title">
+      <header class="mute-header">
+        <button id="muteBackBtn" class="ghost small" aria-label="Back to menu">← Back</button>
+        <div class="mute-status">
+          <span class="dot" id="muteStatusDot" aria-hidden="true"></span>
+          <span id="muteStatusText">Sound control ready</span>
+        </div>
+      </header>
+
+      <section class="mute-body">
+        <div class="mute-intro">
+          <h2 id="mute-title">Mute Tabs (Meeting-aware) 🔕</h2>
+          <p class="mute-subtitle">Tabitha's quietly watching your back during focus time</p>
+        </div>
+
+        <div class="sound-summary">
+          <div class="summary-card">
+            <div class="summary-icon">🎧</div>
+            <div class="summary-content">
+              <span class="summary-text" id="soundSummary">Loading tab information...</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sound-tabs">
+          <div class="tabs-section">
+            <h3 class="section-title">Sounding Tabs</h3>
+            <div class="tabs-list" id="soundingTabs">
+              <!-- Tabs will be dynamically loaded from background script -->
+            </div>
+          </div>
+
+          <div class="tabs-section">
+            <h3 class="section-title">Silent Tabs</h3>
+            <div class="tabs-list" id="silentTabs">
+              <!-- Tabs will be dynamically loaded from background script -->
+            </div>
+          </div>
+        </div>
+
+        <div class="mute-settings">
+          <div class="setting-group">
+            <label class="setting-item large">
+              <input type="checkbox" id="autoMuteToggle" class="setting-toggle">
+              <div class="setting-content">
+                <span class="setting-label">Auto-mute during meetings</span>
+                <span class="setting-description">: Tabitha will automatically mute noisy tabs when you're in a meeting!</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="setting-group">
+            <label class="setting-item">
+              <input type="checkbox" id="rememberMuteToggle" class="setting-toggle">
+              <div class="setting-content">
+                <span class="setting-label">Remember my mute preferences</span>
+                <span class="setting-description">: Learns from your manual mute choices.</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Meeting detection nudge -->
+      <div class="meeting-nudge hidden" id="meetingNudge">
+        <div class="nudge-content">
+          <span class="nudge-icon">🎙️</span>
+          <span class="nudge-text">Looks like you're in a meeting. Should I mute noisy tabs?</span>
+        </div>
+        <div class="nudge-actions">
+          <button class="nudge-btn primary" id="muteOthersBtn">Mute Others</button>
+          <button class="nudge-btn" id="ignoreMeetingBtn">Ignore</button>
+        </div>
+      </div>
+
+      <!-- Toast messages -->
+      <div class="toast-container" id="toastContainer"></div>
+    </div>
+
+  </div>
+
+
+
+  <!-- ============================================================================
+       📜 JAVASCRIPT
+       ============================================================================
+       Main popup JavaScript file with all feature logic
+       ============================================================================ -->
+  <script src="popup.js" type="module"></script>
+</body>
+</html>
